@@ -1,0 +1,6 @@
+.idea/
+*.pyc
+pyexos_ixaustralia.egg-info/
+build/
+dist/
+pip-wheel-metadata/
