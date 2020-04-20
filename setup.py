@@ -23,7 +23,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyexos-ixau",
+    name="ixau-pyexos",
     version=__version__,
     author="Nick Pratley",
     author_email="nick@ix.asn.au",

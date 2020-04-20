@@ -15,11 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from .exos import EXOS
-from .utils import CLICommandException
-from .utils import ConfigParseException
-from .utils import NotImplementedException
-from .utils import SSHException
+from pyexos.exos import EXOS
+from pyexos.utils import CLICommandException
+from pyexos.utils import ConfigParseException
+from pyexos.utils import NotImplementedException
+from pyexos.utils import SSHException
 
 __all__ = [
     EXOS,
