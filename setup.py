@@ -33,9 +33,11 @@ setuptools.setup(
     url="https://github.com/ixaustralia/pyexos",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha" "Programming Language :: Python :: 3",
-        "License :: GPL version 3",
+        "Development Status :: 4 - Beta",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     python_requires="~=3.5",
+    install_requires=["netmiko"],
 )
