@@ -4,7 +4,7 @@ pyexos is a config manipulation utility for Extreme Networks devices, which enab
 
 ##### Installation
 ```sh
-$ pip install -e git+https://github.com/nicko170/pyexos#egg=pyexos
+$ pip install -e git+https://github.com/ixaustralia/pyexos#egg=pyexos
 ```
 
 ##### Usage

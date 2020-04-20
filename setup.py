@@ -17,22 +17,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import setuptools
 
+from pyexos import __version__
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pyexos-ixaustralia",
-    version="0.0.1",
+    name="pyexos-ixau",
+    version=__version__,
     author="Nick Pratley",
     author_email="nick@ix.asn.au",
-    description="pyexos - An Extreme networks config manipulation tool",
+    description="pyexos - An Extreme Networks config manipulation tool",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ixaustralia/pyexos",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha"
-        "Programming Language :: Python :: 3",
+        "Development Status :: 3 - Alpha" "Programming Language :: Python :: 3",
         "License :: GPL version 3",
         "Operating System :: OS Independent",
     ],

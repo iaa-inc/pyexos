@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import re
 
 
-class NotImplimentedException(Exception):
+class NotImplementedException(Exception):
     """ CLI Command Exception """
 
     pass
@@ -43,32 +43,29 @@ class ConfigParseException(Exception):
 
 
 sharing_re = re.compile(
-    "(enable sharing (.*?) grouping (.*?) algorithm (.*?)$)", re.IGNORECASE
+    r"(enable sharing (.*?) grouping (.*?) algorithm (.*?)$)", re.IGNORECASE
 )
 sharing_for_delete_re = re.compile(
-    "(enable sharing (.*?) grouping (.*?) algorithm)", re.IGNORECASE
+    r"(enable sharing (.*?) grouping (.*?) algorithm)", re.IGNORECASE
 )
 acl_re = re.compile("(configure access-list (.*?) ports (.*?))", re.IGNORECASE)
 vlan_re = re.compile(
-    "(configure vlan (.*?) add ports (.*?) (tagged|untagged))$", re.IGNORECASE
+    r"(configure vlan (.*?) add ports (.*?) (tagged|untagged))$", re.IGNORECASE
 )
 vlan_create_re = re.compile('create vlan "(.*?)"')
 port_name_re = re.compile(
-    "(configure ports (.*?) (display-string|description-string)) (.*?)$",
+    r"(configure ports (.*?) (display-string|description-string)) (.*?)$",
     re.IGNORECASE,
 )
 port_name_for_delete_re = re.compile(
-    "(configure ports (.*?) (display-string|description-string))",
-    re.IGNORECASE,
+    r"(configure ports (.*?) (display-string|description-string))", re.IGNORECASE,
 )
-ip_re = re.compile("configure\svlan\sl0\sipaddress\s(.*?)\s255.255.255.255")
-hostname_re = re.compile('configure\ssnmp\ssysName\s"(.*?)"')
+ip_re = re.compile(r"configure\svlan\sl0\sipaddress\s(.*?)\s255.255.255.255")
+hostname_re = re.compile(r"configure\ssnmp\ssysName\s\"(.*?)\"")
 community_re = re.compile(r"configure\ssnmpv3\sadd\scommunity\s\"(.*?)\"")
 ospfarea_re = re.compile(r"create\sospf\sarea\s(.*?)$")
 location_re = re.compile(r"configure\ssnmp\ssysLocation\s\"(.*?)\"")
-virtuallink_re = re.compile(
-    r"configure\sospf\sadd\svirtual-link\s(.*?)\s(.*?)$"
-)
+virtuallink_re = re.compile(r"configure\sospf\sadd\svirtual-link\s(.*?)\s(.*?)$")
 mplsprotocols_re = re.compile(r"enable mpls protocol (.*?)$")
 partition_re = re.compile(r"configure ports (.*?) partition (.*?)$")
 vpls_re = re.compile(r"create l2vpn vpls (.*?) fec-id-type pseudo-wire (.*?)$")

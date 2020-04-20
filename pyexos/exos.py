@@ -29,7 +29,7 @@ from .utils import hostname_re
 from .utils import ip_re
 from .utils import location_re
 from .utils import mplsprotocols_re
-from .utils import NotImplimentedException
+from .utils import NotImplementedException
 from .utils import ospfarea_re
 from .utils import partition_re
 from .utils import port_name_for_delete_re
@@ -109,31 +109,19 @@ class EXOS(object):
         :return:  None
         """
         self.ip = [
-            m.group(1)
-            for m in (ip_re.match(line) for line in self.config)
-            if m
+            m.group(1) for m in (ip_re.match(line) for line in self.config) if m
         ][0]
         self.name = [
-            m.group(1)
-            for m in (hostname_re.match(line) for line in self.config)
-            if m
+            m.group(1) for m in (hostname_re.match(line) for line in self.config) if m
         ][0]
         self.snmp_community = [
-            m.group(1)
-            for m in (community_re.match(line) for line in self.config)
-            if m
+            m.group(1) for m in (community_re.match(line) for line in self.config) if m
         ][0]
         self.ospf_areas = [
-            m.group(1)
-            for m in (ospfarea_re.match(line) for line in self.config)
-            if m
+            m.group(1) for m in (ospfarea_re.match(line) for line in self.config) if m
         ]
         self.location = "".join(
-            [
-                m.group(1)
-                for m in (location_re.match(line) for line in self.config)
-                if m
-            ]
+            [m.group(1) for m in (location_re.match(line) for line in self.config) if m]
         )
         self.ospf_virtual_links = [
             {"peer": m.group(1), "area": m.group(2)}
@@ -151,9 +139,7 @@ class EXOS(object):
             if m
         ]
 
-        for match in [
-            m for m in (vpls_re.match(line) for line in self.config) if m
-        ]:
+        for match in [m for m in (vpls_re.match(line) for line in self.config) if m]:
             vpls_vlan_re = re.compile(
                 f"configure l2vpn vpls {match.group(1)} add service vlan (.*?)$"
             )
@@ -174,16 +160,12 @@ class EXOS(object):
 
             peers_core = [
                 {"ip": m.group(1), "type": "core", "type2": "full-mesh"}
-                for m in (
-                    vpls_peer_core_re.match(line) for line in self.config
-                )
+                for m in (vpls_peer_core_re.match(line) for line in self.config)
                 if m
             ]
             peers_spoke = [
                 {"ip": m.group(1), "type": "spoke", "type2": ""}
-                for m in (
-                    vpls_peer_spoke_re.match(line) for line in self.config
-                )
+                for m in (vpls_peer_spoke_re.match(line) for line in self.config)
                 if m
             ]
             vpls = {
@@ -270,9 +252,7 @@ class EXOS(object):
                         if " cost " in cmd:
                             vlan["ospf"]["cost"] = cmd.split(" cost ")[1]
                         if " priority " in cmd:
-                            vlan["ospf"]["priority"] = cmd.split(" priority ")[
-                                1
-                            ]
+                            vlan["ospf"]["priority"] = cmd.split(" priority ")[1]
 
             self.vlans.append(vlan)
 
@@ -286,23 +266,15 @@ class EXOS(object):
                     "interface": port,
                     "description": "",
                     "display": "",
-                    "sharing": {
-                        "enable": False,
-                        "grouping": [],
-                        "algorithm": "",
-                    },
+                    "sharing": {"enable": False, "grouping": [], "algorithm": "",},
                 }
 
             if match.group(3) == "description-string":
-                port_scratch[port]["description"] = match.group(4).replace(
-                    '"', ""
-                )
+                port_scratch[port]["description"] = match.group(4).replace('"', "")
             if match.group(3) == "display-string":
                 port_scratch[port]["display"] = match.group(4)
 
-        for match in [
-            m for m in (sharing_re.match(line) for line in self.config) if m
-        ]:
+        for match in [m for m in (sharing_re.match(line) for line in self.config) if m]:
             port = match.group(2)
             if port in port_scratch.keys():
                 port_scratch[port]["sharing"] = {
@@ -381,6 +353,11 @@ class EXOS(object):
                 return cmd.replace("add", "delete")
             if "untagged" in cmd:
                 return cmd.replace("add", "delete")
+            if "ipaddress" in cmd:
+                return (
+                    cmd.replace("configure", "unconfigure").split("ipaddress")[0]
+                    + "ipaddress"
+                )
 
         if (
             "disable igmp snooping vlan" in cmd
@@ -388,7 +365,10 @@ class EXOS(object):
             or "disable lldp ports" in cmd
             or "disable edp ports" in cmd
             or "disable learning port" in cmd
+            or "disable learning vlan" in cmd
             or "disable port" in cmd
+            or "disable snmp access" in cmd
+            or "disable jumbo-frame ports" in cmd
         ):
             return cmd.replace("disable", "enable")
 
@@ -397,6 +377,13 @@ class EXOS(object):
             or "enable cdp port" in cmd
             or "enable snmp access" in cmd
             or "enable web" in cmd
+            or "enable dhcp vlan" in cmd
+            or "enable jumbo-frame ports" in cmd
+            or "enable ipforwarding vlan" in cmd
+            or "enable bfd vlan" in cmd
+            or "enable mpls vlan" in cmd
+            or "enable mpls ldp vlan" in cmd
+            or "enable mpls bfd vlan" in cmd
         ):
             return cmd.replace("enable", "disable")
 
@@ -408,17 +395,13 @@ class EXOS(object):
 
         if "description-string" in cmd:
             return (
-                cmd.replace("configure", "unconfigure").split(
-                    "description-string"
-                )[0]
+                cmd.replace("configure", "unconfigure").split("description-string")[0]
                 + "description-string"
             )
 
         if "display-string" in cmd:
             return (
-                cmd.replace("configure", "unconfigure").split(
-                    "display-string"
-                )[0]
+                cmd.replace("configure", "unconfigure").split("display-string")[0]
                 + "display-string"
             )
 
@@ -442,6 +425,9 @@ class EXOS(object):
                 return cmd.replace("add", "delete").split("peer")[0] + "peer"
             if "add service vlan" in cmd:
                 return cmd.replace("add service vlan", "delete service vlan")
+            if "add service vman" in cmd:
+                return cmd.replace("add service vman", "delete service vman")
+
             if "mtu" in cmd:
                 return False
 
@@ -455,6 +441,15 @@ class EXOS(object):
                 .strip()
             )
 
+        if "configure ospf add vlan" in cmd:
+            return cmd.replace("add vlan", "delete vlan").split("area")[0]
+
+        if "configure ospf vlan" in cmd:
+            if " cost " in cmd:
+                return cmd.split(" cost ")[0] + " automatic"
+            if " bfd on" in cmd:
+                return cmd.replace("bfd on", "bfd off")
+
         if "configure ports" in cmd:
             if "partition" in cmd:
                 # Eh - you cannot change port partitions, the new one takes effect
@@ -467,9 +462,10 @@ class EXOS(object):
             if "add service vlan" in cmd:
                 return cmd.replace("add service vlan", "delete service vlan")
             if "add peer" in cmd:
-                return " ".join(
-                    cmd.replace("add peer", "delete peer").split(" ")[:-2]
-                )
+                return " ".join(cmd.replace("add peer", "delete peer").split(" ")[:-2])
+
+            if "mtu" in cmd:
+                return cmd.split("mtu")[0] + "mtu 1500"
 
         if "configure meter" in cmd:
             # Can only update meters
@@ -477,9 +473,7 @@ class EXOS(object):
 
         if "configure sflow ports" in cmd:
             if "sample-rate" in cmd:
-                return cmd.replace("configure", "unconfigure").split(
-                    "sample-rate"
-                )[0]
+                return cmd.replace("configure", "unconfigure").split("sample-rate")[0]
             return False
 
         if "configure access-list" in cmd:
@@ -488,8 +482,11 @@ class EXOS(object):
                     re.sub("access-list (.*?) ports", "access-list ports", cmd)
                 ).replace("configure", "unconfigure")
 
+        if "configure mpls add vlan" in cmd:
+            return cmd.replace("add vlan", "delete vlan")
+
         ## Command not known - return with XX prepended to isolate these commands.
-        raise NotImplimentedException("Cannot process: {}".format(cmd))
+        raise NotImplementedException("Cannot process: {}".format(cmd))
 
     def expandports(self, port_list):
         """
@@ -562,9 +559,7 @@ class EXOS(object):
         self.config = []
 
         config = [
-            line.strip()
-            for line in config
-            if line.strip() and not line.startswith("#")
+            line.strip() for line in config if line.strip() and not line.startswith("#")
         ]
 
         for line in config:
@@ -612,14 +607,11 @@ class EXOS(object):
         final_config = []
 
         for cmd in candidate_config:
-
             if cmd in running_config:
                 continue
 
             if "enable sharing" in cmd:
-                if self._regex_search_list(
-                    cmd, running_config, sharing_for_delete_re
-                ):
+                if self._regex_search_list(cmd, running_config, sharing_for_delete_re):
                     continue
 
             if "configure access-list" in cmd:
@@ -630,25 +622,29 @@ class EXOS(object):
 
         return final_config
 
-    def diff_config_replace(self, new_config):
+    def diff_config_replace(self, new_config, skip_lines=[]):
         """
         Builds a delta configuration that can be applied to transition the switch from the running config, to the new config. A 'Config Merge Replace' in any sane vendor.
 
         :param new_config:  A complete switch configuration
+        "param skip_lines:  A list of any config lines you DO NOT WANT IN THE DIFF - Useful to remove things before applying.
         :return:            A list of changes to apply to the switch to transition to the new config.
         """
         to_delete = []
-        new_config = [line.strip() for line in new_config if line.strip()]
+        new_config = [
+            line.strip()
+            for line in new_config
+            if line.strip() and line.strip() not in skip_lines
+        ]
 
         for cmd in self.config:
+            # Don't care about the cmd, if it's in the existing running config
             if cmd in new_config:
                 continue
 
             # We dont want to delete anything that is just being changed
             # Port Checks
-            if self._regex_search_list(
-                cmd, new_config, port_name_for_delete_re
-            ):
+            if self._regex_search_list(cmd, new_config, port_name_for_delete_re):
                 continue
 
             # Only delete sharing *if required*
@@ -669,7 +665,6 @@ class EXOS(object):
             "disable": [],
             "create": [],
             "delete": [],
-            "XX": [],
         }
         for cmd in to_delete:
             to_delete_scratch[cmd.split(" ")[0]].append(cmd)
@@ -790,10 +785,7 @@ class EXOS(object):
 
         if save:
             output.append(
-                {
-                    "cmd": "save configuration",
-                    "output": self.device.save_config(),
-                }
+                {"cmd": "save configuration", "output": self.device.save_config(),}
             )
 
         return output

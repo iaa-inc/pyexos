@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from .exos import EXOS
 from .utils import CLICommandException
 from .utils import ConfigParseException
-from .utils import NotImplimentedException
+from .utils import NotImplementedException
 from .utils import SSHException
 
 __all__ = [
@@ -26,5 +26,7 @@ __all__ = [
     SSHException,
     CLICommandException,
     ConfigParseException,
-    NotImplimentedException,
+    NotImplementedException,
 ]
+
+__version__ = "0.0.1"
