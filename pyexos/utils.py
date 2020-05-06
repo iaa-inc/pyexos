@@ -42,6 +42,7 @@ class ConfigParseException(Exception):
     pass
 
 
+sharing_re_for_add = re.compile(r"(enable sharing (.*?) grouping)", re.IGNORECASE)
 sharing_re = re.compile(
     r"(enable sharing (.*?) grouping (.*?) algorithm (.*?)$)", re.IGNORECASE
 )

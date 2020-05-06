@@ -36,6 +36,7 @@ from .utils import port_name_for_delete_re
 from .utils import port_name_re
 from .utils import sharing_for_delete_re
 from .utils import sharing_re
+from .utils import sharing_re_for_add
 from .utils import SSHException
 from .utils import virtuallink_re
 from .utils import vlan_create_re
@@ -327,7 +328,7 @@ class EXOS(object):
                 match_item = expression.match(item)
                 if match_item:
                     if match_item.group() == search_match.group():
-                        found = True
+                        found = match_item
                         continue
 
         return found
@@ -611,6 +612,27 @@ class EXOS(object):
                 continue
 
             if "enable sharing" in cmd:
+                # if sharing in both old and new, we need to generate an "add" command, for each new port in the list.
+                share = self._regex_search_list(cmd, running_config, sharing_re_for_add)
+                if share:
+                    master_port = share.group(2)
+                    for line in [
+                        line for line in running_config if "enable sharing" in line
+                    ]:
+                        match = sharing_for_delete_re.match(line)
+                        if match and (match.group(2) == master_port):
+                            existing_ports = match.group(3).split(",")
+                            match2 = sharing_for_delete_re.match(cmd)
+                            new_ports = match2.group(3).split(",")
+                            for port in new_ports:
+                                if port in existing_ports:
+                                    continue
+
+                                final_config.append(
+                                    f"configure sharing {master_port} add port {port}"
+                                )
+                    continue
+
                 if self._regex_search_list(cmd, running_config, sharing_for_delete_re):
                     continue
 
