@@ -621,7 +621,7 @@ class EXOS(object):
                     ]:
                         match = sharing_for_delete_re.match(line)
                         if match and (match.group(2) == master_port):
-                            existing_ports = match.group(3).split(",")
+                            existing_ports = self.expandports(match.group(3))
                             match2 = sharing_for_delete_re.match(cmd)
                             new_ports = match2.group(3).split(",")
                             for port in new_ports:
